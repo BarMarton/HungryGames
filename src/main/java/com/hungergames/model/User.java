@@ -22,6 +22,10 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @NotBlank
+    @Column(nullable = false)
+    private String password;
+
     @Min(0)
     @Column(nullable = false)
     private double balance;
@@ -30,7 +34,8 @@ public class User {
     private Instant createdAt = Instant.now();
 
     public User(String username, double startingBalance) {
-        this.username = username;
-        this.balance = startingBalance;
-    }
+    this.username = username;
+    this.balance = startingBalance;
+    this.password = "";
+}
 }

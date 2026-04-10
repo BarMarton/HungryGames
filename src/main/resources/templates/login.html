@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="hun">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Bet your time</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+	<div class="login_wrapper">
+        <form action="" id="login">
+            <h1>Login</h1>
+            <div class="input_box">
+                <input maxlength="14" type="text" placeholder="Username" required>
+            </div>
+            <div class="input_box">
+                <input maxlength="14" type="password" placeholder="Password" required>
+            </div>
+
+            <div class="remember">
+                <label><input type="checkbox" id="remember_me"> Remember me </label>
+                <a href="#"> Forgot password</a>
+            </div>
+            <button type="button" class="btn" onclick="logPressed()">Log in</button>
+
+            <div class="reg-link"><p>Dont have an account?<span onclick="switchLogReg()" style="cursor: pointer;"> Register</span></div>
+        </form>
+
+        <form action="" style="display: none;" id="reg">
+            <h1>Register</h1>
+            <div class="input_box">
+                <input maxlength="14" type="text" placeholder="Username" required>
+            </div>
+            <div class="input_box">
+                <input maxlength="20" type="text" placeholder="email adress" required>
+            </div>
+            <div class="input_box">
+                <input maxlength="14" type="password" placeholder="Password" required>
+            </div>
+            <div class="input_box">
+                <input maxlength="14" type="password" placeholder="Password again" required>
+            </div>
+
+            <butto type="button" class="btn" onclick="regPressed()">Register</button>
+        </form>
+    </div>
+    <script src="/js/script.js"></script>
+</body>
+</html>
