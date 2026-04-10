@@ -73,7 +73,7 @@ function logPressed() {
 function sendLoginToServer(data) {
     const params = new URLSearchParams(data);
 
-    fetch('/login', {
+    fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params

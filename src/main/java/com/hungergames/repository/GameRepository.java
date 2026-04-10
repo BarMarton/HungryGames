@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface GameRepository extends JpaRepository<Game, Long> {
     Optional<Game> findTopByStatusOrderByIdDesc(GameStatus status);
     Page<Game> findAllByOrderByIdDesc(Pageable pageable);
+    Optional<Game> findTopByOrderByIdDesc();
 }

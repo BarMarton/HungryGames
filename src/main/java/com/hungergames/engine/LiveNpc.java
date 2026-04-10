@@ -10,7 +10,7 @@ public class LiveNpc {
 
     private final long id;
     private final String name;
-
+    private final int picId;
     private final int maxHp;
     private final int dmg;
     private final int speed;
@@ -21,7 +21,8 @@ public class LiveNpc {
     private boolean alive = true;
     private final int moveCooldown;
 
-    public LiveNpc(long id, String name, int maxHp, int dmg, int speed, int startX, int startY) {
+    public LiveNpc(long id, String name, int maxHp, int dmg, int speed, int startX, int startY, int picID) {
+        this.picId = picID;
         this.id = id;
         this.name = name;
         this.maxHp = maxHp;

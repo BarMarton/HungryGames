@@ -26,7 +26,7 @@ public class NpcDto {
 
     public static NpcDto fromEntity(NPC npc) {
         NpcDto dto = new NpcDto();
-        dto.id = npc.getId();
+        dto.id = (long) npc.getPicId();
         dto.name = npc.getName();
         dto.gameId = npc.getGame().getId();
         dto.maxHp = npc.getMaxHp();

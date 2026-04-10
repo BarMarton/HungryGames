@@ -117,17 +117,25 @@ public class GameService {
     }
 
 
+    // @Transactional(readOnly = true)
+    // public GameResponse getCurrentGame() {
+    //     Optional<Game> inProgress = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.IN_PROGRESS);
+    //     if (inProgress.isPresent()) {
+    //         return buildGameResponse(inProgress.get(), true);
+    //     }
+    //     Optional<Game> betting = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.BETTING);
+    //     if (betting.isPresent()) {
+    //         return buildGameResponse(betting.get(), false);
+    //     }
+    //     throw new NoSuchElementException("No active game found");
+    // }
+
     @Transactional(readOnly = true)
     public GameResponse getCurrentGame() {
-        Optional<Game> inProgress = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.IN_PROGRESS);
-        if (inProgress.isPresent()) {
-            return buildGameResponse(inProgress.get(), true);
-        }
-        Optional<Game> betting = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.BETTING);
-        if (betting.isPresent()) {
-            return buildGameResponse(betting.get(), false);
-        }
-        throw new NoSuchElementException("No active game found");
+        Game latestGame = gameRepository.findTopByOrderByIdDesc()
+                .orElseThrow(() -> new NoSuchElementException("No active game found"));
+
+        return buildGameResponse(latestGame, latestGame.getStatus() == GameStatus.IN_PROGRESS);
     }
 
     @Transactional(readOnly = true)
@@ -161,12 +169,7 @@ public class GameService {
         Set<String> usedPositions = new HashSet<>();
         List<NPC> npcs = new ArrayList<>();
 
-        String[] adjectives = {"Crimson", "Shadow", "Iron", "Storm", "Frost", "Blaze",
-                "Void", "Silver", "Toxic", "Jade", "Obsidian", "Golden"};
-        String[] nouns = {"Wolf", "Viper", "Hawk", "Bear", "Dragon", "Fox",
-                "Tiger", "Raven", "Lynx", "Phoenix", "Shark", "Cobra"};
-
-        Set<String> usedNames = new HashSet<>();
+        String[] names = {"minecraft makka", "Kovács Dániel OwO", "Kocsán László", "Barabás Márton von Marci", "Téapó","Milef when sees this", "Dragon sex", "Lakatos Radiátor"};
 
         for (int i = 0; i < npcCount; i++) {
             String posKey;
@@ -178,16 +181,9 @@ public class GameService {
             } while (usedPositions.contains(posKey));
             usedPositions.add(posKey);
 
-            String name;
-            do {
-                name = adjectives[rng.nextInt(adjectives.length)] + " "
-                        + nouns[rng.nextInt(nouns.length)];
-            } while (usedNames.contains(name));
-            usedNames.add(name);
-
             NPC npc = new NPC();
             npc.setGame(game);
-            npc.setName(name);
+            npc.setName(names[i]);
             npc.setMaxHp(50 + rng.nextInt(101));
             npc.setDmg(5 + rng.nextInt(26));
             npc.setSpeed(1 + rng.nextInt(10));
@@ -195,6 +191,7 @@ public class GameService {
             npc.setFinalX(x);
             npc.setFinalY(y);
             npc.setAlive(true);
+            npc.setPicId(i+1);
             npcs.add(npcRepository.save(npc));
         }
 

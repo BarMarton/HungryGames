@@ -74,7 +74,7 @@ public class GameEngine {
             LiveNpc live = new LiveNpc(
                     npc.getId(), npc.getName(),
                     npc.getMaxHp(), npc.getDmg(), npc.getSpeed(),
-                    npc.getFinalX(), npc.getFinalY()
+                    npc.getFinalX(), npc.getFinalY(), npc.getPicId()
             );
             liveNpcs.add(live);
         }
@@ -148,11 +148,25 @@ public class GameEngine {
         }
     }
 
-    private void moveRandomly(LiveNpc npc) {
-        int dir = rng.nextInt(4);
-        int nx = npc.getX() + DX[dir];
-        int ny = npc.getY() + DY[dir];
-        // Clamp to grid
+private void moveRandomly(LiveNpc npc) {
+        List<LiveNpc> alive = npcs.stream()
+            .filter(n -> n.isAlive() && n.getId() != npc.getId())
+            .toList();
+        int targetNpcID = rng.nextInt(alive.size());
+        int targetX = alive.get(targetNpcID).getX();
+        int targetY = alive.get(targetNpcID).getY();
+
+        int diffX = targetX - npc.getX();
+        int diffY = targetY - npc.getY();
+
+        int nx = npc.getX();
+        int ny = npc.getY();
+
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            nx += Integer.signum(diffX);
+        } else if (diffY != 0) {
+            ny += Integer.signum(diffY);
+        }
         npc.setX(Math.max(0, Math.min(gridSize - 1, nx)));
         npc.setY(Math.max(0, Math.min(gridSize - 1, ny)));
     }
@@ -269,7 +283,7 @@ public class GameEngine {
 
     private NpcDto toDto(LiveNpc npc) {
         NpcDto dto = new NpcDto();
-        dto.setId(npc.getId());
+        dto.setId((long)npc.getPicId());
         dto.setName(npc.getName());
         dto.setGameId(currentGameId);
         dto.setMaxHp(npc.getMaxHp());

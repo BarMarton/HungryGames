@@ -48,4 +48,7 @@ public class NPC {
 
     @Column(name = "finish_position")
     private Integer finishPosition;
+
+    @Column(name="pic_id")
+    private Integer picId; 
 }

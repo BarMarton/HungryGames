@@ -6,6 +6,7 @@ import com.hungergames.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -14,6 +15,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
     @Transactional
@@ -22,6 +24,7 @@ public class UserService {
             throw new IllegalArgumentException("Username '" + request.getUsername() + "' is already taken");
         }
         User user = new User(request.getUsername(), request.getStartingBalance());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         return userRepository.save(user);
     }
 

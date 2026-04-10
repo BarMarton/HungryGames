@@ -7,7 +7,6 @@ const prize = document.getElementById('winamount');
 const tempNum = 10;
 let img_size = document.getElementById('m_image');
 const mapContainerElement = document.querySelector('.map');
-
 //debug list
 //let characters_debug = ["ayna", "apa", "gyerekek","minőségtelen lacika","mákos tészta","MAMA"];
 
@@ -37,6 +36,10 @@ const client = new StompJs.Client({
                 activateWinPopup([status.winnerNpcName]);
             } else if (status.status === 'IN_PROGRESS') {
                 events.showEvent("The game has started");
+            } else if (status.status === 'BETTING') {
+                console.log("FOGADÁS INDULT - Átirányítás..."); 
+                
+                window.location.replace('/fogadas')
             }
         });
 
@@ -48,7 +51,7 @@ const client = new StompJs.Client({
                     const mappedX = (npc.x / 100) * width;
                     const mappedY = (npc.y / 100) * height;
                     
-                    updateCharacterOnMap(npc.id, 'pic/characters/1.jpg', mappedX, mappedY);
+                    updateCharacterOnMap(npc.id, "pic/characters/"+ npc.id +".jpg", mappedX, mappedY);
                 } else {
                     remove_character(npc.id);
                 }
@@ -59,9 +62,7 @@ const client = new StompJs.Client({
             const eventPayload = JSON.parse(msg.body);
             
             eventPayload.events.forEach(e => {
-                if (e.type === 'COMBAT') {
-                    events.showEvent(`${e.attackerName} megtámadta: ${e.defenderName} (-${e.damage} HP)`);
-                } else if (e.type === 'DEATH') {
+                if (e.type === 'DEATH') {
                     events.showEvent(`💀 ${e.deadNpcName} elesett!`);
                     remove_character(e.deadNpcId);
                 }

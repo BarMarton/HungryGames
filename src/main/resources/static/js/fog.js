@@ -2,16 +2,18 @@ let marNovekedett = false;
 let marginNovelve = false;
 let aktualisKivalasztott = null;
 
-let kepekAdatok = [
-    { nev: "pic/characters/1.jpg", cim: "Gigachad", szoveg: "Leírás" },
-    { nev: "pic/characters/2.jpg", cim: "Shrek", szoveg: "Leírás." },
-    { nev: "pic/characters/3.jpg", cim: "Arató András", szoveg: "Leírás" },
-    { nev: "pic/characters/4.jpg", cim: "Homer Simpson", szoveg: "Leírás" },
-    { nev: "pic/characters/5.jpg", cim: "Mike Wazowski", szoveg: "Leírás" },
-    { nev: "pic/characters/6.jpg", cim: "Ricardo Milos", szoveg: "Leírás" },
-    { nev: "pic/characters/7.jpg", cim: "Minecraft Cat", szoveg: "Leírás" },
-    { nev: "pic/characters/8.jpg", cim: "Peter Griffin", szoveg: "Leírás" }
-];
+// let kepekAdatok = [
+//     { nev: "pic/characters/1.jpg", cim: "Gigachad", szoveg: "Leírás" },
+//     { nev: "pic/characters/2.jpg", cim: "Shrek", szoveg: "Leírás." },
+//     { nev: "pic/characters/3.jpg", cim: "Arató András", szoveg: "Leírás" },
+//     { nev: "pic/characters/4.jpg", cim: "Homer Simpson", szoveg: "Leírás" },
+//     { nev: "pic/characters/5.jpg", cim: "Mike Wazowski", szoveg: "Leírás" },
+//     { nev: "pic/characters/6.jpg", cim: "Ricardo Milos", szoveg: "Leírás" },
+//     { nev: "pic/characters/7.jpg", cim: "Minecraft Cat", szoveg: "Leírás" },
+//     { nev: "pic/characters/8.jpg", cim: "Peter Griffin", szoveg: "Leírás" }
+// ];
+
+let kepekAdatok = [];
 
 function beallitMargin(sor) {
     const sorSzelesseg = sor.clientWidth;
@@ -159,3 +161,57 @@ function initFogadasGomb() {
 
 initKepek();
 initFogadasGomb();
+
+const client = new StompJs.Client({
+    webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+    onConnect: () => {
+        client.subscribe('/topic/game.status', msg => {
+            const status = JSON.parse(msg.body);
+            if (status.status === 'IN_PROGRESS') {
+                window.location.href = '/sim';
+            }
+        });
+    }
+});
+client.activate();
+
+async function lekerNpck() {
+        const gameRes = await fetch('/api/games/current');
+        if (!gameRes.ok) throw new Error("Nincs aktuális játék.");
+        const game = await gameRes.json();
+
+        const npcsRes = await fetch(`/api/games/${game.id}/npcs`);
+        if (!npcsRes.ok) throw new Error("Hiba az NPC-k lekérésekor.");
+        const npcs = await npcsRes.json();
+        
+        kepekAdatok = npcs.map(npc => ({
+            id: npc.id, 
+            nev: `pic/characters/${npc.id}.jpg`,
+            cim: npc.name,
+            szoveg: `Max HP: ${npc.maxHp} | Sebesség: ${npc.speed} | Sebzés: ${npc.dmg}`
+        }));
+        initKepek();
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
+async function loadCurrentUser() {
+    const userId = getCookie("userId");
+    const response = await fetch(`/api/users/${userId}`);
+
+    if (response.ok) {
+        const user = await response.json();
+        console.log("Bejelentkezett felhasználó adatai:", user);
+    }
+}
+
+
+window.addEventListener('load', () => {
+    loadCurrentUser();
+    lekerNpck();
+});
