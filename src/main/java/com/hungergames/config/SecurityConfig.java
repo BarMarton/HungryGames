@@ -24,11 +24,12 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/pic/**").permitAll() 
+                .requestMatchers("/login", "/register", "/fogadas", "/sim", "/css/**", "/js/**", "/pic/**").permitAll() 
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
+                .defaultSuccessUrl("/fogadas", true)
                 .permitAll()
             );
             

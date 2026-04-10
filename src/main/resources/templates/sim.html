@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="hun">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hunger games sim</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="sim_page">
+    <div id="event-container" class="event-container"></div>
+    <div class="popup" id="popup">
+        <div class="victory">
+            Match ended
+            <div class="leaderboard" id="leader">
+            </div>
+            <div id="winamount">
+
+            </div>
+        </div>
+    </div>
+        <div class="map">
+        <div id="map-wrapper">
+            <img src="pic/map.png" alt="" id="m_image">
+        </div>
+    <div class="character_placer" id="sub_base"></div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="/js/sim.js"></script>
+</body>
+</html>

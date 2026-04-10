@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Fogadó felület</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="fog_page">
+    <div class="felsoSzoveg">
+        Válasz ki egy karaktert!
+    </div>
+
+    <div class="teglalap" id="doboz">
+        <div id="kepekContainer"></div>
+        <div class="rejtettCim" id="cim">
+            <div class="innerCim">Fogadófelület</div>
+        </div>
+        <div class="rejtettResz" id="alsoResz">
+    
+            <div class="balDoboz" id="balDoboz">
+                
+            </div>
+
+            <div class="jobbDoboz">
+                <select id="penzOsszeg">
+                    <option>500 Ft</option>
+                    <option>1000 Ft</option>
+                    <option>2000 Ft</option>
+                </select>
+
+            <button class="fogadasGomb">Fogadás</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="jobbFelso">
+        <div class="penzKep">
+            <img src="../../assets/money/money.jpg" alt="money">
+        </div>
+        <div class="penzSzoveg">
+        0 Ft
+        </div>
+    </div>
+
+    <script src="/js/fog.js"></script>
+
+</body>
+</html>

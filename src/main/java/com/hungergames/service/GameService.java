@@ -61,6 +61,7 @@ public class GameService {
 
     @Transactional
     public void startGame(BiConsumer<Long, Long> onGameEnd) {
+        System.out.println("Elkeztdődött a kecskesex");
         Game game = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.BETTING)
                 .orElseThrow(() -> new IllegalStateException("No game in BETTING state found"));
 
