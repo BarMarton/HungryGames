@@ -65,6 +65,8 @@ const client = new StompJs.Client({
                 if (e.type === 'DEATH') {
                     events.showEvent(`💀 ${e.deadNpcName} elesett!`);
                     remove_character(e.deadNpcId);
+                } else if (e.type === 'WEAPON_PICKUP') {
+                    events.showEvent(`⚔️ ${e.attackerName} fegyvert talált! (+${e.damage} DMG)`);
                 }
             });
         });

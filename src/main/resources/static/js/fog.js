@@ -188,7 +188,7 @@ async function lekerNpck() {
             id: npc.id, 
             nev: `pic/characters/${npc.id}.jpg`,
             cim: npc.name,
-            szoveg: `Max HP: ${npc.maxHp} | Sebesség: ${npc.speed} | Sebzés: ${npc.dmg}`
+            szoveg: `Max HP: ${npc.maxHp} | Sebesség: ${npc.speed} | Sebzés: ${npc.dmg} | Regen: ${npc.regen}`
         }));
         initKepek();
 }

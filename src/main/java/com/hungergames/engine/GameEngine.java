@@ -49,6 +49,7 @@ public class GameEngine {
     private volatile int deathRank = 0;
 
     private final Map<Long, LiveNpc> finalNpcStates = new ConcurrentHashMap<>();
+    private final Map<Long, Integer> hiddenWeapons = new ConcurrentHashMap<>();
 
 
     public GameEngine(SimpMessagingTemplate messaging) {
@@ -68,12 +69,26 @@ public class GameEngine {
         this.tickCounter = 0;
         this.deathRank = 0;
         this.finalNpcStates.clear();
+        this.hiddenWeapons.clear();
+
+        int weaponCount = 5;
+
+        for (int i = 0; i < weaponCount; i++) {
+            int wx = rng.nextInt(gridSize);
+            int wy = rng.nextInt(gridSize);
+
+            long weaponKey = (long) wx * gridSize + wy;
+            int weaponBonus = 3 + rng.nextInt(8);
+            hiddenWeapons.put(weaponKey, weaponBonus);
+        }
+        System.out.println(hiddenWeapons);
+        log.info("Le sexy vepön {} putted on the máp.", hiddenWeapons.size());
 
         List<LiveNpc> liveNpcs = new ArrayList<>();
         for (NPC npc : dbNpcs) {
             LiveNpc live = new LiveNpc(
                     npc.getId(), npc.getName(),
-                    npc.getMaxHp(), npc.getDmg(), npc.getSpeed(),
+                    npc.getMaxHp(), npc.getDmg(), npc.getRegen(), npc.getSpeed(),
                     npc.getFinalX(), npc.getFinalY(), npc.getPicId()
             );
             liveNpcs.add(live);
@@ -108,9 +123,45 @@ public class GameEngine {
             List<GameEvent> tickEvents = new ArrayList<>();
 
             synchronized (this) {
-                for (LiveNpc npc : npcs) {
-                    if (npc.isAlive() && npc.shouldMoveOnTick(tickCounter)) {
+    for (LiveNpc npc : npcs) {
+        if (npc.isAlive() && npc.shouldMoveOnTick(tickCounter)) {
                         moveRandomly(npc);
+                        int pickupRadius = 5;
+                        long pickedWeaponKey = -1;
+                        Integer weaponBonus = null;
+
+                        if (tickCounter % 5 == 0) {
+                            npc.heal(); 
+                        }
+
+                        for (Map.Entry<Long, Integer> entry : hiddenWeapons.entrySet()) {
+                            long key = entry.getKey();
+                            int wx = (int) (key / gridSize);
+                            int wy = (int) (key % gridSize);
+
+                            int dx = npc.getX() - wx;
+                            int dy = npc.getY() - wy;
+                            
+                            if (dx * dx + dy * dy <= pickupRadius * pickupRadius) {
+                                pickedWeaponKey = key;
+                                weaponBonus = entry.getValue();
+                                break;
+                            }
+                        }
+
+                        if (pickedWeaponKey != -1) {
+                            hiddenWeapons.remove(pickedWeaponKey); 
+                            npc.setDmg(npc.getDmg() + weaponBonus);
+
+                            GameEvent pickupEvent = new GameEvent();
+                            pickupEvent.setType(GameEventMessage.EventType.WEAPON_PICKUP);
+                            pickupEvent.setAttackerId(npc.getId());
+                            pickupEvent.setAttackerName(npc.getName());
+                            pickupEvent.setDamage(weaponBonus); 
+                            
+                            tickEvents.add(pickupEvent); 
+                            log.debug("{} felvett egy fegyvert a közelből (+{} dmg)!", npc.getName(), weaponBonus);
+                        }
                     }
                 }
 

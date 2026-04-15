@@ -16,6 +16,8 @@ public class NpcDto {
     private int currentHp;
     private int dmg;
     private int speed;
+    private int max_hp;
+    private int regen;
 
     // Position
     private int x;
@@ -32,6 +34,7 @@ public class NpcDto {
         dto.maxHp = npc.getMaxHp();
         dto.currentHp = npc.getFinalHp();
         dto.dmg = npc.getDmg();
+        dto.regen = npc.getRegen();
         dto.speed = npc.getSpeed();
         dto.x = npc.getFinalX();
         dto.y = npc.getFinalY();

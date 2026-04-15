@@ -187,6 +187,7 @@ public class GameService {
             npc.setMaxHp(50 + rng.nextInt(101));
             npc.setDmg(5 + rng.nextInt(26));
             npc.setSpeed(1 + rng.nextInt(10));
+            npc.setRegen(0+rng.nextInt(5));
             npc.setFinalHp(npc.getMaxHp());
             npc.setFinalX(x);
             npc.setFinalY(y);
