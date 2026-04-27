@@ -5,6 +5,7 @@ import com.hungergames.dto.GameEventMessage.GameEvent;
 import com.hungergames.dto.GameStateMessage;
 import com.hungergames.dto.GameStatusMessage;
 import com.hungergames.dto.NpcDto;
+import com.hungergames.dto.WeaponDto;
 import com.hungergames.model.Game;
 import com.hungergames.model.GameStatus;
 import com.hungergames.model.NPC;
@@ -49,6 +50,7 @@ public class GameEngine {
     private volatile int deathRank = 0;
 
     private final Map<Long, LiveNpc> finalNpcStates = new ConcurrentHashMap<>();
+    private final Map<Long, Integer> hiddenWeapons = new ConcurrentHashMap<>();
 
 
     public GameEngine(SimpMessagingTemplate messaging) {
@@ -68,13 +70,33 @@ public class GameEngine {
         this.tickCounter = 0;
         this.deathRank = 0;
         this.finalNpcStates.clear();
+        this.hiddenWeapons.clear();
+
+        int weaponCount = 5;
+
+        for (int i = 0; i < weaponCount; i++) {
+            int wx = rng.nextInt(gridSize);
+            int wy = rng.nextInt(gridSize);
+
+            long weaponKey = (long) wx * gridSize + wy;
+            int weaponBonus = 3 + rng.nextInt(8);
+            hiddenWeapons.put(weaponKey, weaponBonus);
+        }
+        System.out.println(hiddenWeapons);
+        log.info("Le sexy vepön {} putted on the máp.", hiddenWeapons.size());
 
         List<LiveNpc> liveNpcs = new ArrayList<>();
         for (NPC npc : dbNpcs) {
             LiveNpc live = new LiveNpc(
-                    npc.getId(), npc.getName(),
-                    npc.getMaxHp(), npc.getDmg(), npc.getSpeed(),
-                    npc.getFinalX(), npc.getFinalY()
+                    npc.getId(), 
+                    npc.getName(),
+                    npc.getMaxHp(), 
+                    npc.getDmg(), 
+                    npc.getSpeed(),  
+                    npc.getFinalX(), 
+                    npc.getFinalY(), 
+                    npc.getRegen(),  
+                    npc.getPicId()   
             );
             liveNpcs.add(live);
         }
@@ -108,9 +130,45 @@ public class GameEngine {
             List<GameEvent> tickEvents = new ArrayList<>();
 
             synchronized (this) {
-                for (LiveNpc npc : npcs) {
-                    if (npc.isAlive() && npc.shouldMoveOnTick(tickCounter)) {
+    for (LiveNpc npc : npcs) {
+        if (npc.isAlive() && npc.shouldMoveOnTick(tickCounter)) {
                         moveRandomly(npc);
+                        int pickupRadius = 4;
+                        long pickedWeaponKey = -1;
+                        Integer weaponBonus = null;
+
+                        if (tickCounter % 5 == 0) {
+                            npc.heal(); 
+                        }
+
+                        for (Map.Entry<Long, Integer> entry : hiddenWeapons.entrySet()) {
+                            long key = entry.getKey();
+                            int wx = (int) (key / gridSize);
+                            int wy = (int) (key % gridSize);
+
+                            int dx = npc.getX() - wx;
+                            int dy = npc.getY() - wy;
+                            
+                            if (dx * dx + dy * dy <= pickupRadius * pickupRadius) {
+                                pickedWeaponKey = key;
+                                weaponBonus = entry.getValue();
+                                break;
+                            }
+                        }
+
+                        if (pickedWeaponKey != -1) {
+                            hiddenWeapons.remove(pickedWeaponKey); 
+                            npc.setDmg(npc.getDmg() + weaponBonus);
+
+                            GameEvent pickupEvent = new GameEvent();
+                            pickupEvent.setType(GameEventMessage.EventType.WEAPON_PICKUP);
+                            pickupEvent.setAttackerId(npc.getId());
+                            pickupEvent.setAttackerName(npc.getName());
+                            pickupEvent.setDamage(weaponBonus); 
+                            
+                            tickEvents.add(pickupEvent); 
+                            log.debug("{} felvett egy fegyvert a közelből (+{} dmg)!", npc.getName(), weaponBonus);
+                        }
                     }
                 }
 
@@ -148,11 +206,25 @@ public class GameEngine {
         }
     }
 
-    private void moveRandomly(LiveNpc npc) {
-        int dir = rng.nextInt(4);
-        int nx = npc.getX() + DX[dir];
-        int ny = npc.getY() + DY[dir];
-        // Clamp to grid
+private void moveRandomly(LiveNpc npc) {
+        List<LiveNpc> alive = npcs.stream()
+            .filter(n -> n.isAlive() && n.getId() != npc.getId())
+            .toList();
+        int targetNpcID = rng.nextInt(alive.size());
+        int targetX = alive.get(targetNpcID).getX();
+        int targetY = alive.get(targetNpcID).getY();
+
+        int diffX = targetX - npc.getX();
+        int diffY = targetY - npc.getY();
+
+        int nx = npc.getX();
+        int ny = npc.getY();
+
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            nx += Integer.signum(diffX);
+        } else if (diffY != 0) {
+            ny += Integer.signum(diffY);
+        }
         npc.setX(Math.max(0, Math.min(gridSize - 1, nx)));
         npc.setY(Math.max(0, Math.min(gridSize - 1, ny)));
     }
@@ -241,12 +313,38 @@ public class GameEngine {
     }
 
     private void broadcastState() {
-        List<NpcDto> dtos = npcs.stream().map(this::toDto).collect(Collectors.toList());
+
+        List<NpcDto> dtos = npcs.stream()
+        .map(this::toDto)
+        .collect(Collectors.toList());
+
         long alive = dtos.stream().filter(NpcDto::isAlive).count();
-        GameStateMessage msg = new GameStateMessage("STATE", currentGameId, tickCounter, (int) alive, dtos);
+
+        List<WeaponDto> weapons = hiddenWeapons.entrySet().stream()
+            .map(entry -> {
+                long key = entry.getKey();
+                int x = (int) (key / gridSize);
+                int y = (int) (key % gridSize);
+
+                WeaponDto dto = new WeaponDto();
+                dto.setId(key);
+                dto.setX(x);
+                dto.setY(y);
+                return dto;
+            })
+            .collect(Collectors.toList());
+
+        GameStateMessage msg = new GameStateMessage();
+        msg.setType("STATE");
+        msg.setGameId(currentGameId);
+        msg.setTick(tickCounter);
+        msg.setAliveCount((int) alive);
+        msg.setNpcs(dtos);
+        msg.setWeapons(weapons); // 🔥 EZ A LÉNYEG
+
         messaging.convertAndSend("/topic/game.state", msg);
     }
-
+    
     private void broadcastEvents(List<GameEvent> events) {
         GameEventMessage msg = new GameEventMessage();
         msg.setGameId(currentGameId);
@@ -269,7 +367,7 @@ public class GameEngine {
 
     private NpcDto toDto(LiveNpc npc) {
         NpcDto dto = new NpcDto();
-        dto.setId(npc.getId());
+        dto.setId((long)npc.getPicId());
         dto.setName(npc.getName());
         dto.setGameId(currentGameId);
         dto.setMaxHp(npc.getMaxHp());

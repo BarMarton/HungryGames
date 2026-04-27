@@ -41,7 +41,7 @@ public class GameController {
 
     @GetMapping("/{id}/npcs")
     public List<NpcDto> getNpcs(@PathVariable Long id) {
-        return gameService.getNpcsForGame(id);
+        return gameService.getBettingNpcs(id);
     }
 
     @GetMapping("/{id}/bets")
@@ -55,11 +55,11 @@ public class GameController {
      * Odds of 0 means nobody has bet on that NPC yet.
      */
     @GetMapping("/{id}/odds")
-    public Map<Long, Double> getOdds(@PathVariable Long id) {
+    public Map<Integer, Double> getOdds(@PathVariable Long id) {
         List<NpcDto> npcs = gameService.getNpcsForGame(id);
         Map<Long, Double> odds = new java.util.LinkedHashMap<>();
         for (NpcDto npc : npcs) {
-            odds.put(npc.getId(), betService.getOdds(id, npc.getId()));
+            odds.put(npc.getPicId(), betService.getOdds(gameId, npc.getId()));
         }
         return odds;
     }

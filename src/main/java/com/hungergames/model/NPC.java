@@ -36,9 +36,13 @@ public class NPC {
 
     @Column(name = "final_hp", nullable = false)
     private int finalHp;
+    
 
     @Column(name = "final_x", nullable = false)
     private int finalX;
+
+    @Column(nullable = false)
+    private int regen;
 
     @Column(name = "final_y", nullable = false)
     private int finalY;
@@ -48,4 +52,7 @@ public class NPC {
 
     @Column(name = "finish_position")
     private Integer finishPosition;
+
+    @Column(name="pic_id")
+    private Integer picId; 
 }

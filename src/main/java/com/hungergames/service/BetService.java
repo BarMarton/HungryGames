@@ -33,11 +33,14 @@ public class BetService {
             throw new IllegalStateException("Bets can only be placed while the game is in the BETTING phase");
         }
 
-        NPC npc = npcRepository.findById(req.getNpcId())
-                .orElseThrow(() -> new NoSuchElementException("NPC not found: " + req.getNpcId()));
+        NPC npc = npcRepository.findByGameId(game.getId())
+        .stream()
+        .filter(n -> n.getPicId() != null && n.getPicId().equals(req.getPicId()))
+        .findFirst()
+        .orElseThrow(() -> new NoSuchElementException("NPC not found for picId: " + req.getPicId()));
 
         if (!npc.getGame().getId().equals(game.getId())) {
-            throw new IllegalArgumentException("NPC " + req.getNpcId() + " does not belong to game " + req.getGameId());
+            throw new IllegalArgumentException("NPC " + req.getPicId() + " does not belong to game " + req.getGameId());
         }
 
         User user = userRepository.findById(req.getUserId())
@@ -68,6 +71,11 @@ public class BetService {
     public void processPayouts(Long gameId, Long winnerNpcId) {
         List<Bet> allBets = betRepository.findByGameId(gameId);
 
+        log.info("=== PAYOUT START ===");
+        log.info("GameId: {}, WinnerNpcId: {}", gameId, winnerNpcId);
+
+        log.info("Total bets: {}", allBets.size());
+
         if (allBets.isEmpty()) {
             log.info("Game {} had no bets. No payouts.", gameId);
             return;
@@ -77,19 +85,31 @@ public class BetService {
         double totalBetsOnWinner = winnerNpcId != null
                 ? betRepository.sumAmountByGameIdAndNpcId(gameId, winnerNpcId)
                 : 0.0;
+        
+        log.info("TotalPool: {}", totalPool);
+        log.info("TotalBetsOnWinner: {}", totalBetsOnWinner);
 
         for (Bet bet : allBets) {
+
+            log.info("Checking bet: user={}, npcId={}, amount={}",
+                bet.getUser().getId(),
+                bet.getNpc().getId(),
+                bet.getAmount()
+            );
             double payout = 0.0;
             if (winnerNpcId != null
                     && bet.getNpc().getId().equals(winnerNpcId)
                     && totalBetsOnWinner > 0) {
                 payout = (bet.getAmount() / totalBetsOnWinner) * totalPool;
+
+                log.info("WINNER BET! Calculated payout: {}", payout);
             }
             bet.setPayout(payout);
             bet.setSettled(true);
             betRepository.save(bet);
 
             if (payout > 0) {
+                log.info("ADDING BALANCE to user {} amount {}", bet.getUser().getId(), payout);
                 userService.addBalance(bet.getUser().getId(), payout);
                 log.info("Payout: user={} amount={} (bet {} on winner NPC {})",
                         bet.getUser().getUsername(), payout, bet.getAmount(), winnerNpcId);

@@ -38,6 +38,9 @@ public class GameService {
     @Value("${game.npc-count:10}")
     private int npcCount;
 
+    @Value("${game.betting-npc-count:6}")
+    private int bettingNpcCount;
+
     @Value("${game.grid-size:100}")
     private int gridSize;
 
@@ -61,6 +64,7 @@ public class GameService {
 
     @Transactional
     public void startGame(BiConsumer<Long, Long> onGameEnd) {
+        System.out.println("Elkeztdődött a kecskesex");
         Game game = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.BETTING)
                 .orElseThrow(() -> new IllegalStateException("No game in BETTING state found"));
 
@@ -116,17 +120,25 @@ public class GameService {
     }
 
 
+    // @Transactional(readOnly = true)
+    // public GameResponse getCurrentGame() {
+    //     Optional<Game> inProgress = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.IN_PROGRESS);
+    //     if (inProgress.isPresent()) {
+    //         return buildGameResponse(inProgress.get(), true);
+    //     }
+    //     Optional<Game> betting = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.BETTING);
+    //     if (betting.isPresent()) {
+    //         return buildGameResponse(betting.get(), false);
+    //     }
+    //     throw new NoSuchElementException("No active game found");
+    // }
+
     @Transactional(readOnly = true)
     public GameResponse getCurrentGame() {
-        Optional<Game> inProgress = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.IN_PROGRESS);
-        if (inProgress.isPresent()) {
-            return buildGameResponse(inProgress.get(), true);
-        }
-        Optional<Game> betting = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.BETTING);
-        if (betting.isPresent()) {
-            return buildGameResponse(betting.get(), false);
-        }
-        throw new NoSuchElementException("No active game found");
+        Game latestGame = gameRepository.findTopByOrderByIdDesc()
+                .orElseThrow(() -> new NoSuchElementException("No active game found"));
+
+        return buildGameResponse(latestGame, latestGame.getStatus() == GameStatus.IN_PROGRESS);
     }
 
     @Transactional(readOnly = true)
@@ -155,17 +167,39 @@ public class GameService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<NpcDto> getBettingNpcs(Long gameId) {
+
+        List<NpcDto> npcs;
+
+        if (gameEngine.isRunning()) {
+            Optional<Game> live = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.IN_PROGRESS);
+            if (live.isPresent() && live.get().getId().equals(gameId)) {
+                npcs = gameEngine.getCurrentNpcStates();
+            } else {
+                npcs = npcRepository.findByGameId(gameId).stream()
+                        .map(NpcDto::fromEntity)
+                        .collect(Collectors.toList());
+            }
+        } else {
+            npcs = npcRepository.findByGameId(gameId).stream()
+                    .map(NpcDto::fromEntity)
+                    .collect(Collectors.toList());
+        }
+
+        Collections.shuffle(npcs);
+
+        return npcs.stream()
+                .limit(bettingNpcCount)
+                .toList();
+    }
+
     private List<NPC> spawnNpcs(Game game) {
         Random rng = new Random();
         Set<String> usedPositions = new HashSet<>();
         List<NPC> npcs = new ArrayList<>();
 
-        String[] adjectives = {"Crimson", "Shadow", "Iron", "Storm", "Frost", "Blaze",
-                "Void", "Silver", "Toxic", "Jade", "Obsidian", "Golden"};
-        String[] nouns = {"Wolf", "Viper", "Hawk", "Bear", "Dragon", "Fox",
-                "Tiger", "Raven", "Lynx", "Phoenix", "Shark", "Cobra"};
-
-        Set<String> usedNames = new HashSet<>();
+        String[] names = {"minecraft makka", "Kovács Dániel OwO", "Kocsán László", "Barabás Márton von Marci", "Téapó","Mike Wazowski", "Dragon sex", "Lakatos Radiátor", "Éhes ember", "Zöld hulk", "Elfogyott a sör", "Kuta", "Micsoda férfi", "Cineman", "Kis menő", "Ace man"};
 
         for (int i = 0; i < npcCount; i++) {
             String posKey;
@@ -177,23 +211,18 @@ public class GameService {
             } while (usedPositions.contains(posKey));
             usedPositions.add(posKey);
 
-            String name;
-            do {
-                name = adjectives[rng.nextInt(adjectives.length)] + " "
-                        + nouns[rng.nextInt(nouns.length)];
-            } while (usedNames.contains(name));
-            usedNames.add(name);
-
             NPC npc = new NPC();
             npc.setGame(game);
-            npc.setName(name);
+            npc.setName(names[i]);
             npc.setMaxHp(50 + rng.nextInt(101));
             npc.setDmg(5 + rng.nextInt(26));
             npc.setSpeed(1 + rng.nextInt(10));
+            npc.setRegen(0+rng.nextInt(5));
             npc.setFinalHp(npc.getMaxHp());
             npc.setFinalX(x);
             npc.setFinalY(y);
             npc.setAlive(true);
+            npc.setPicId(i+1);
             npcs.add(npcRepository.save(npc));
         }
 
