@@ -100,7 +100,7 @@ public class BetService {
             if (winnerNpcId != null
                     && bet.getNpc().getId().equals(winnerNpcId)
                     && totalBetsOnWinner > 0) {
-                payout = (bet.getAmount() / totalBetsOnWinner) * totalPool;
+                payout = ((bet.getAmount() / totalBetsOnWinner) * totalPool)*1.05;
 
                 log.info("WINNER BET! Calculated payout: {}", payout);
             }
