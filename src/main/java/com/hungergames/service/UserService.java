@@ -25,6 +25,7 @@ public class UserService {
         }
         User user = new User(request.getUsername(), request.getStartingBalance());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
         return userRepository.save(user);
     }
 
@@ -56,6 +57,8 @@ public class UserService {
         user.setBalance(user.getBalance() - amount);
         userRepository.save(user);
     }
+
+
 
     @Transactional
     public void addBalance(Long userId, double amount) {

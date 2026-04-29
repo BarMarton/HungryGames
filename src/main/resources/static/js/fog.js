@@ -244,7 +244,7 @@ function initFogadasGomb() {
 
                 alert("Fogadás sikeres!");
                 marFogadott = true;
-                localStorage.setItem("fogadott", "true");
+                //localStorage.setItem("fogadott_" + userId, "true");
                 await loadCurrentUser();
                 updateFogadasGombState();
 
@@ -288,7 +288,7 @@ function updateFogadasGombState() {
     const amount = Number(selectElem.value.replace(" Ft", ""));
 
     const nincsPenz = balance < amount;
-    const alreadyBet = localStorage.getItem("fogadott") === "true";
+    //const alreadyBet = localStorage.getItem("fogadott") === "true";
 
     if (nincsPenz || marFogadott) {
         gomb.disabled = true;
@@ -305,7 +305,7 @@ function updateFogadasGombState() {
 initFogadasGomb();
 
 const client = new StompJs.Client({
-    webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+    webSocketFactory: () => new SockJS(window.location.origin + '/ws'),
     onConnect: () => {
         client.subscribe('/topic/game.status', msg => {
             const status = JSON.parse(msg.body);
@@ -378,6 +378,21 @@ async function loadCurrentUser() {
     }
 }
 
+async function lekerFogadasAllapot() {
+    const userId = getCookie("userId");
+    if (!userId) return;
+
+    try {
+        const response = await fetch(`/api/bets/has-bet?userId=${userId}`);
+        if (response.ok) {
+            marFogadott = await response.json();
+            updateFogadasGombState();
+        }
+    } catch (err) {
+        console.error("Hiba a fogadás állapotának lekérdezésekor", err);
+    }
+}
+
 function initLogout() {
     const btn = document.getElementById("logoutBtn");
 
@@ -406,7 +421,8 @@ function initLogout() {
 window.addEventListener('load', () => {
     loadCurrentUser();
     lekerNpck();
-    marFogadott = localStorage.getItem("fogadott") === "true";
-    updateFogadasGombState();
+    // marFogadott = localStorage.getItem("fogadott") === "true";
+    lekerFogadasAllapot();
+    // updateFogadasGombState(); 
     initLogout();
 });

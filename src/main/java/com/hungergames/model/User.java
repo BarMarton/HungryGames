@@ -30,6 +30,9 @@ public class User {
     @Column(nullable = false)
     private double balance;
 
+    @Column(unique = true)
+    private String email;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 

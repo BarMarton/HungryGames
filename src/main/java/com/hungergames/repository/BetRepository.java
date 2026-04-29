@@ -22,4 +22,6 @@ public interface BetRepository extends JpaRepository<Bet, Long> {
     double sumAmountByGameId(@Param("gameId") Long gameId);
 
     boolean existsByUserIdAndGameId(Long userId, Long gameId);
+    
+    
 }

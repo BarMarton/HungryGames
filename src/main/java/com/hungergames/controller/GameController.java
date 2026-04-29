@@ -54,13 +54,13 @@ public class GameController {
      * Odds = totalPool / totalBetsOnNpc.
      * Odds of 0 means nobody has bet on that NPC yet.
      */
-    @GetMapping("/{id}/odds")
-    public Map<Integer, Double> getOdds(@PathVariable Long id) {
+@GetMapping("/{id}/odds")
+    public Map<Long, Double> getOdds(@PathVariable Long id) {
         List<NpcDto> npcs = gameService.getNpcsForGame(id);
         Map<Long, Double> odds = new java.util.LinkedHashMap<>();
+        
         for (NpcDto npc : npcs) {
-            odds.put(npc.getPicId(), betService.getOdds(gameId, npc.getId()));
+            odds.put((long) npc.getPicId(), betService.getOdds(id, npc.getId()));
         }
         return odds;
-    }
-}
+    }}

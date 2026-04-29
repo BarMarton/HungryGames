@@ -16,6 +16,7 @@ var height
 let isDragging = false;
 let startX, startY, scrollLeft, scrollTop;
 let aliveCount = 0;
+let marFogadott = false;
 
 let characters = []
 let weapons = [];
@@ -25,7 +26,7 @@ const weaponImages = [
     "/pic/weapons/ij.png"
 ];
 
-const fogadott = localStorage.getItem("fogadott") === "true";
+//const fogadott = localStorage.getItem("fogadott") === "true";
 
 // function fillBase() {
 //     for (let i = 0; i < tempNum; i++) {
@@ -35,7 +36,7 @@ const fogadott = localStorage.getItem("fogadott") === "true";
 
 //---------------------------------------------------Websocket_is_that_easy-------------------------
 const client = new StompJs.Client({
-    webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+    webSocketFactory: () => new SockJS(window.location.origin + '/ws'),
     onConnect: () => {
         console.log("Sesxy");
 
@@ -54,6 +55,8 @@ const client = new StompJs.Client({
         });
 
         client.subscribe('/topic/game.state', msg => {
+            width = img_size.clientWidth;
+            height = img_size.clientHeight;
             const state = JSON.parse(msg.body);
             aliveCount = state.npcs.filter(n => n.alive).length;
             
@@ -167,6 +170,21 @@ async function loadCurrentUser() {
         console.log("UPDATED BALANCE:", user.balance);
     } else {
         console.error("Nem sikerült lekérni a user adatokat");
+    }
+}
+
+async function lekerFogadasAllapot() {
+    const userId = getCookie("userId");
+    if (!userId) return;
+
+    try {
+        const response = await fetch(`/api/bets/has-bet?userId=${userId}`);
+        if (response.ok) {
+            marFogadott = await response.json(); 
+            console.log("Fogadás állapota szerverről:", marFogadott);
+        }
+    } catch (err) {
+        console.error("Hiba a fogadás állapotának lekérdezésekor", err);
     }
 }
 
@@ -347,7 +365,7 @@ function listWinners(character_list) {
         const picId = getPicIdByName(name);
 
         const characterOnLeaderboard = document.createElement('div');
-        characterOnLeaderboard.classList = fogadott 
+        characterOnLeaderboard.classList = marFogadott 
             ? 'leader_character' 
             : 'leader_character spectator';
 
@@ -367,7 +385,7 @@ function listWinners(character_list) {
 
 async function activateWinPopup(character_list){
 
-    const winnings = await getMyWinnings(); // 🔥 EZ A LÉNYEG
+    const winnings = await getMyWinnings();
 
     writePrize(winnings);
 
@@ -379,7 +397,7 @@ async function activateWinPopup(character_list){
 
     const img = document.getElementById("resultImage");
 
-    if (fogadott) {
+    if (marFogadott) {
         if (winnings > 0) {
             playSound("/audio/win.mp3");
             img.src = "/pic/winner.png";
@@ -441,7 +459,7 @@ class EventManager {
 const events = new EventManager('event-container');
 
 
-function main() {
+async function main() {
     width = img_size.clientWidth;
     height = img_size.clientHeight;
 
@@ -450,7 +468,10 @@ function main() {
       .catch(e => console.error("FETCH ERROR:", e));
 
     loadCurrentUser();
+    await lekerFogadasAllapot();
     client.activate();
 }
 
-main();
+window.addEventListener('load', () => {
+    main();
+});

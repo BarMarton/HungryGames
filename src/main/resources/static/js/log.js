@@ -16,21 +16,15 @@ function switchLogReg(){
     }
 }
 
-function regPressed(){
-    let inputs = document.querySelectorAll("#reg input");
+document.getElementById("reg").addEventListener("submit", function(event) {
+    let pass1 = document.getElementById("pass1").value;
+    let pass2 = document.getElementById("pass2").value;
     
-    if (inputs[2].value !== inputs[3].value){
+    if (pass1 !== pass2) {
         alert("The passwords aren't matching!");
-        return;
-    } 
-    
-    const userData = {
-        username: inputs[0].value,
-        email: inputs[1].value,
-        password: inputs[2].value
-    };
-    sendToServer(userData);
-}
+        event.preventDefault();
+    }
+});
 
 function sendToServer(data) {
     const params = new URLSearchParams(data); 

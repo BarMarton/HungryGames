@@ -64,13 +64,24 @@ public class WebController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestParam String username, 
+    public String registerUser(@RequestParam String username,
+                               @RequestParam String email, 
                                @RequestParam String password, 
                                Model model) {
         
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                model.addAttribute("error", "Érvénytelen email cím!");
+                return "login";
+            }
+
         if (userRepository.existsByUsername(username)) {
             model.addAttribute("error", "Ez a felhasználónév már foglalt!");
             return "login";
+        }
+
+        if (userRepository.existsByEmail(email)) {
+        model.addAttribute("error", "Ezzel az email címmel már regisztráltak!");
+        return "login";
         }
 
         UserRequest request = new UserRequest();
