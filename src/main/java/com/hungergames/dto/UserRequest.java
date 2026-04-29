@@ -15,4 +15,9 @@ public class UserRequest {
 
     @Min(value = 0, message = "Starting balance must be non-negative")
     private double startingBalance = 1000.0;
+
+    @NotBlank(message = "Email must not be blank")
+    private String email;
+
+    private String password;
 }

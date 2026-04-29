@@ -17,4 +17,5 @@ public class GameStateMessage {
     private long tick;
     private int aliveCount;
     private List<NpcDto> npcs;
+    private List<WeaponDto> weapons;
 }

@@ -2,7 +2,10 @@ package com.hungergames.controller;
 
 import com.hungergames.dto.BetResponse;
 import com.hungergames.dto.PlaceBetRequest;
+import com.hungergames.repository.BetRepository;
 import com.hungergames.service.BetService;
+import com.hungergames.service.GameService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/bets")
@@ -18,11 +21,26 @@ import java.util.List;
 public class BetController {
 
     private final BetService betService;
+    private final GameService gameService;
+    private final BetRepository betRepository;
 
     @PostMapping
-    public ResponseEntity<BetResponse> placeBet(@Valid @RequestBody PlaceBetRequest request) {
+    public ResponseEntity<?> placeBet(@Valid @RequestBody PlaceBetRequest request) {
+        if (betRepository.existsByUserIdAndGameId(request.getUserId(), request.getGameId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "Ebben a körben már fogadtál!"));
+        }
+
         BetResponse bet = betService.placeBet(request);
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(bet);
+    }
+
+    @GetMapping("/has-bet")
+    public ResponseEntity<Boolean> hasUserBetInCurrentGame(@RequestParam Long userId) {
+        Long currentGameId = gameService.getCurrentGame().getId();
+        boolean hasBet = betRepository.existsByUserIdAndGameId(userId, currentGameId);
+        return ResponseEntity.ok(hasBet);
     }
 
     @GetMapping("/{id}")

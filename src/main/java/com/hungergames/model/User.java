@@ -22,15 +22,23 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @NotBlank
+    @Column(nullable = false)
+    private String password;
+
     @Min(0)
     @Column(nullable = false)
     private double balance;
+
+    @Column(unique = true)
+    private String email;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
     public User(String username, double startingBalance) {
-        this.username = username;
-        this.balance = startingBalance;
-    }
+    this.username = username;
+    this.balance = startingBalance;
+    this.password = "";
+}
 }

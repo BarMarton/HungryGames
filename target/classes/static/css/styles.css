@@ -1,0 +1,853 @@
+/* Universal css - Ide kerülnek pl gombok stílusai */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: "Poppins", Arial, Helvetica, sans-serif;
+}
+
+/*Fogadás css - Ide dolgozik a Lacika */
+body.fogadas_page {
+    margin: 0; 
+    min-height: 100dvh; 
+    background-image: url("../pic/bg.jpg"); 
+    background-size: cover;       
+    background-position: center;  
+    background-repeat: no-repeat;
+}
+
+.felsoSzoveg {
+    position: absolute; 
+    top: 100px;         
+    left: 50%;         
+    transform: translateX(-50%); 
+    
+    font-size: 30px;   
+    font-weight: bold; 
+    color: white;       
+    text-align: center; 
+    z-index: 10;       
+}
+
+
+.teglalap {
+    position: absolute; 
+    top: 150px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+
+    width: 800px; 
+
+    backdrop-filter: blur(20px);  
+    border: 3px solid black; 
+    border-radius: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: flex-start; 
+    align-items: center; 
+    
+    padding: 10px;
+}
+
+
+.kepekContainer {
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: flex-start; 
+    align-items: center; 
+}
+
+
+.sor {
+    display: flex; 
+    align-items: center;
+    height: 110px; 
+}
+
+.kepek {
+    width: 100px; 
+    height: 100px; 
+    object-fit: cover; 
+    cursor: pointer; 
+    transition: transform 0.2s ease;
+    margin-right: 0; 
+}
+
+.kepek:hover {
+    transform: scale(1.2);
+}
+
+.kivalasztott {
+    transform: scale(1.2) !important; 
+}
+
+.jobbFelso {
+    position: absolute; 
+    top: 20px; 
+    right: 20px;
+    width: 250px; 
+    height: 70px;              
+    padding: 10px;
+    background-color: lightcoral; 
+    border: 2px solid black; 
+    border-radius: 15px; 
+    
+    display: flex;             
+    align-items: center;      
+    justify-content: flex-start;
+    gap: 50px; 
+}
+
+.penzKep img {
+    margin-left: 30px;
+    height: 100%;      
+    max-height: 60px;  
+    object-fit: contain;
+}
+
+
+
+.rejtettCim {
+    height: 0;            
+    overflow: hidden;       
+    text-align: center;
+    margin-top: 10px;
+}
+
+.innerCim {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+}
+
+.rejtettResz {
+    height: 0; 
+    overflow: hidden; 
+    width: 100%;
+    margin-top: 10px;
+
+    display: flex; 
+    justify-content: space-between; 
+}
+
+
+.balDoboz {
+    width: 40%;          
+    height: 100%;
+    text-align: left;      
+    padding: 10px;
+    background-color: black;
+    border-radius: 10px;
+    margin-left: 70px;
+    border: 2px solid white; 
+}
+
+.balDoboz h3 {
+    margin: 0 0 5px 0;    
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+}
+
+.balDoboz p {
+    margin: 0;
+    font-size: 14px;
+    color: white;
+}
+
+
+.jobbDoboz {
+    width: 45%;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    gap: 15px; 
+}
+
+
+.fogadasGomb {
+    padding: 15px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+
+.fogadasGomb:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+}
+
+.penzSzoveg {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/*Login css - Ide dolgozik Mr Double D*/
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100dvh;
+    background: url("../pic/bg.jpg") no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.login_wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    max-width: 420px;
+    background: transparent;
+    color: white;
+    border-radius: 10px;
+    padding: 5% 2%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.414);
+    transition: width, height 0.3s;
+}
+
+.login_wrapper form{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login_wrapper h1 {
+    font-size: large;
+    text-align: center;
+}
+
+.login_wrapper .input_box {
+    width: 100%;
+    height: 30%;
+    margin-top: 3%;
+}
+
+.login_wrapper .input_box input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    border: 2px solid rgba(255, 255, 255, 0.232);
+    border-radius: 40px;
+    color: white;
+    padding: 4% 7% 4% 7%;
+    text-align: center;
+}
+
+.login_wrapper .input_box input::placeholder{
+    color: rgba(255, 255, 255, 0.29);
+}
+
+.login_wrapper .remember{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    margin: 15px 4px;
+}
+
+.login_wrapper .remember label input {
+    accent-color: white;
+    margin-right: 3px;
+}
+
+.login_wrapper .remember a {
+    color: white;
+    text-decoration: none;
+}
+
+.login_wrapper .remember a:hover{
+    text-decoration: underline;
+}
+
+.login_wrapper .btn{
+    width: 47%;
+    text-align: center;
+    height: 40px;
+    background: white;
+    border: none;
+    outline: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 16px;
+    color: darkslategrey;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2%;
+    transition: color, background-color 0.3s ease;
+    margin-top: 3%;
+}
+
+.login_wrapper .btn:hover{
+    color: white;
+    background-color: rgb(58, 7, 7);
+}
+
+.login_wrapper .reg-link{
+    font-size: 14.5px;
+    text-align: center;
+    margin: 20px 0 15px;
+}
+
+.login_wrapper .reg-link a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login_wrapper .reg-link a:hover{
+     text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .login_wrapper {
+        padding: 20px;
+    }
+    .login_wrapper h1 {
+        font-size: medium;
+    }
+}
+/* Le pvp css - Ez lesz a harci tér pityputyja */
+
+body.sim_page {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: block;
+}
+
+.map {
+    margin: 0;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    background-color: transparent;
+    overflow: hidden;
+    cursor: grab;
+}
+
+#map-wrapper {
+    width: max-content;
+    height: max-content;
+    position: relative;
+}
+
+
+.map img {
+    width: 150vw;
+    max-width: none;
+    height: auto;
+    display: block;
+    border-radius: 0;
+    pointer-events: none;
+    user-select: none;
+}
+
+.character_placer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    background-color: black;
+    width: 100%;
+    height: auto; 
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    z-index: 10;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.character {
+    width: 100%;
+    max-width: 60px;
+    height: auto;
+}
+
+.map-character {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    overflow: hidden;
+    transform: translate(-50%, -50%); 
+    transition: top 0.5s linear, left 0.5s linear; 
+    z-index: 3;
+}
+.map-character img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.character img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.victory {
+    padding: 0 40px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: min(900px, 90vw);
+    height: min(700px, 80vh);
+
+
+    background: linear-gradient(
+        145deg,
+        #0f2745,
+        #1b4f85 50%,
+        #0a1a2f
+    );
+
+    border: 2px solid rgba(255,255,255,0.1);
+
+    box-shadow: 
+        inset 0 0 20px rgba(255,255,255,0.05),
+        inset 0 0 40px rgba(0,0,0,0.8),
+        0 0 30px rgba(0,0,0,0.6);
+
+    color: white;
+    border-radius: 20px;
+
+}
+
+/* ===== HEADER ===== */
+.match-header {
+    width: 60%;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+
+    padding: 12px;
+
+    background: linear-gradient(180deg, #000000, #111);
+
+    border-bottom: 3px solid rgba(255,255,255,0.2);
+
+    border-radius: 0 0 25px 25px;
+
+    margin: 0; /* fontos */
+}
+
+/* ===== BODY LAYOUT ===== */
+.match-body {
+    display: flex;
+    width: 100%;
+    height: 75%; /* ← EZ irányítja a leaderboard méretét */
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* ===== SLOT OSZLOPOK ===== */
+.slot-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: clamp(50px, 10vw, 80px);
+
+}
+
+.slot {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+
+
+    animation: slotPingPong 1.2s infinite alternate;
+}
+
+/* casino villogás */
+@keyframes slotPingPong {
+    0% {
+        opacity: 0.3;
+        transform: scale(0.9);
+        background: gold;
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.25);
+        background: orange;
+        box-shadow: 0 0 15px gold, 0 0 25px orange;
+    }
+    100% {
+        opacity: 0.3;
+        transform: scale(0.9);
+        background: gold;
+    }
+}
+
+/* BAL OSZLOP */
+.slot-column.left .slot:nth-child(1) {
+    animation-delay: 0s;
+}
+.slot-column.left .slot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.slot-column.left .slot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+/* JOBB OSZLOP (tükör!) */
+.slot-column.right .slot:nth-child(1) {
+    animation-delay: 0.4s;
+}
+.slot-column.right .slot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.slot-column.right .slot:nth-child(3) {
+    animation-delay: 0s;
+}
+
+/* ===== LEADERBOARD ===== */
+.leaderboard {
+    flex: none;              /* ❗ fontos */
+    width: clamp(200px, 60%, 500px);
+    height: 100%;            /* kitölti a középső részt */
+    margin: 0 20px;
+
+    border-radius: 15px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+
+    overflow-y: auto;
+}
+
+.result-image {
+    width: 90%;
+    height: 70%;      /* 👈 ettől nem torzul */
+    
+    display: none;
+    margin: 15px auto;
+
+    object-fit: contain; /* biztosan teljesen látszik */
+    border-radius: 0;    /* nincs körítés */
+    
+    border: none;
+    box-shadow: none;
+}
+
+/* ===== FOOTER ===== */
+.match-footer {
+    width: 60%;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+
+    padding: 20px;
+
+    background: linear-gradient(180deg, #111, #000);
+
+    border-top: 3px solid rgba(255,255,255,0.2);
+
+    border-radius: 25px 25px 0 0;
+
+    margin-top: auto; /* fontos */
+}
+
+.popup {
+    visibility:hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.812);
+    z-index: 999;
+}
+#winamount {
+    font-size: large;
+    font-weight: bold;
+}
+
+.event-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+.event-message {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.event-message.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+@media (max-width: 480px) {
+    .map {
+        width: 100%;
+        margin-bottom: 40vh;
+    }
+    
+    .map img {
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0px 10px 10px black;
+    }
+}
+
+.map-weapon {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.map-weapon img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid gold;
+
+    object-fit: cover;
+
+    box-shadow: 0 0 8px gold, 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.logoutBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+
+    cursor: pointer;
+    z-index: 999;
+    transition: 0.2s;
+}
+
+.logoutBtn:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+}
+
+.npc-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 20px;
+    font-size: 14px;
+}
+
+.npc-stats div {
+    display: flex;
+    justify-content: space-between;
+    color: white;
+}
+
+.npc-stats span {
+    font-weight: bold;
+}
+
+.leader_character {
+    width: 50%;
+    margin: 0 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: rgba(255, 255, 255, 0.92);
+
+    /* bal + jobb lekerekítés külön */
+    border-radius: 12px 35px 35px 12px;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+
+    overflow: visible; /* fontos, hogy kilóghasson a kép */
+    position: relative;
+}
+
+.leader_character.spectator {
+    margin-top: 200px;
+    width: 50%;
+
+    transform: scale(1.9);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: rgba(255, 255, 255, 0.92);
+
+    /* bal + jobb lekerekítés külön */
+    border-radius: 12px 35px 35px 12px;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+
+    overflow: visible; /* fontos, hogy kilóghasson a kép */
+    position: relative;
+}
+
+.leader_character.spectator .winner-right {
+    position: relative;
+    width: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.leader_character.spectator .winner-right img {
+    width: 55px;
+    height: 55px;
+
+    border-radius: 50%;
+    object-fit: cover;
+
+    border: 3px solid white;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+
+    /* EZ CSINÁLJA A "KIUGRÁST" */
+    transform: scale(1.2);
+}
+
+.leader_character.spectator .winner-left {
+    padding: 10px 15px;
+}
+
+.leader_character.spectator .winner-left p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+}
+
+/* NÉV BAL OLDALT */
+.winner-left {
+    padding: 10px 15px;
+}
+
+.winner-left p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+}
+
+/* JOBB OLDAL - KÉP KONTAINER */
+.winner-right {
+    position: relative;
+    width: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* AVATAR */
+.winner-right img {
+    width: 55px;
+    height: 55px;
+
+    border-radius: 50%;
+    object-fit: cover;
+
+    border: 3px solid white;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+
+    /* EZ CSINÁLJA A "KIUGRÁST" */
+    transform: scale(1.2);
+}
+
+.pinBoxWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#penzOsszeg {
+    background: black;
+    color: white;
+    border: 2px solid white;
+    padding: 10px 40px 10px 10px;
+    font-size: 18px;
+    letter-spacing: 4px;
+    width: 160px;
+    border-radius: 10px;
+
+    outline: none;
+}
+
+/* eltüntetjük a number spinner-t */
+#penzOsszeg::-webkit-outer-spin-button,
+#penzOsszeg::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#penzOsszeg {
+    -moz-appearance: textfield;
+}
+
+.ftLabel {
+    position: absolute;
+    right: 10px;
+    color: white;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+#penzOsszeg {
+    transition: 0.2s ease;
+}
+
+#penzOsszeg:focus {
+    box-shadow: 0 0 8px white;
+}
+

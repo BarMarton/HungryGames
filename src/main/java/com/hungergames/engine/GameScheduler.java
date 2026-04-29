@@ -19,7 +19,7 @@ public class GameScheduler {
 
     private final GameService gameService;
 
-    @Value("${game.betting-duration-seconds:300}")
+    @Value("${game.betting-duration-seconds:5}")
     private int bettingDurationSeconds;
 
     @Value("${game.between-games-pause-seconds:30}")

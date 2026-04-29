@@ -13,7 +13,8 @@ public class GameEventMessage {
         COMBAT,   // an NPC attacked another
         DEATH,    // an NPC was killed
         MOVE,     // informational – only sent if no other events this tick
-        GAME_OVER // game finished
+        GAME_OVER, // game finished
+        WEAPON_PICKUP //fővette a puskát lacika
     }
 
     @Data

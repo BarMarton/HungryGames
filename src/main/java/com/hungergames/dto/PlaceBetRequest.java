@@ -14,7 +14,7 @@ public class PlaceBetRequest {
     private Long gameId;
 
     @NotNull
-    private Long npcId;
+    private Integer picId;
 
     @NotNull
     @Min(value = 1, message = "Minimum bet is 1")

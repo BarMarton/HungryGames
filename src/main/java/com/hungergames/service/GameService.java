@@ -35,8 +35,11 @@ public class GameService {
     private final GameEngine gameEngine;
     private final SimpMessagingTemplate messaging;
 
-    @Value("${game.npc-count:10}")
+    @Value("${game.npc-count:8}")
     private int npcCount;
+
+    @Value("${game.betting-npc-count:6}")
+    private int bettingNpcCount;
 
     @Value("${game.grid-size:100}")
     private int gridSize;
@@ -61,6 +64,7 @@ public class GameService {
 
     @Transactional
     public void startGame(BiConsumer<Long, Long> onGameEnd) {
+        System.out.println("Elkeztdődött a kecskesex");
         Game game = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.BETTING)
                 .orElseThrow(() -> new IllegalStateException("No game in BETTING state found"));
 
@@ -116,17 +120,25 @@ public class GameService {
     }
 
 
+    // @Transactional(readOnly = true)
+    // public GameResponse getCurrentGame() {
+    //     Optional<Game> inProgress = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.IN_PROGRESS);
+    //     if (inProgress.isPresent()) {
+    //         return buildGameResponse(inProgress.get(), true);
+    //     }
+    //     Optional<Game> betting = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.BETTING);
+    //     if (betting.isPresent()) {
+    //         return buildGameResponse(betting.get(), false);
+    //     }
+    //     throw new NoSuchElementException("No active game found");
+    // }
+
     @Transactional(readOnly = true)
     public GameResponse getCurrentGame() {
-        Optional<Game> inProgress = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.IN_PROGRESS);
-        if (inProgress.isPresent()) {
-            return buildGameResponse(inProgress.get(), true);
-        }
-        Optional<Game> betting = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.BETTING);
-        if (betting.isPresent()) {
-            return buildGameResponse(betting.get(), false);
-        }
-        throw new NoSuchElementException("No active game found");
+        Game latestGame = gameRepository.findTopByOrderByIdDesc()
+                .orElseThrow(() -> new NoSuchElementException("No active game found"));
+
+        return buildGameResponse(latestGame, latestGame.getStatus() == GameStatus.IN_PROGRESS);
     }
 
     @Transactional(readOnly = true)
@@ -155,50 +167,77 @@ public class GameService {
                 .collect(Collectors.toList());
     }
 
-    private List<NPC> spawnNpcs(Game game) {
-        Random rng = new Random();
-        Set<String> usedPositions = new HashSet<>();
-        List<NPC> npcs = new ArrayList<>();
+    @Transactional(readOnly = true)
+    public List<NpcDto> getBettingNpcs(Long gameId) {
+        List<NpcDto> npcs;
 
-        String[] adjectives = {"Crimson", "Shadow", "Iron", "Storm", "Frost", "Blaze",
-                "Void", "Silver", "Toxic", "Jade", "Obsidian", "Golden"};
-        String[] nouns = {"Wolf", "Viper", "Hawk", "Bear", "Dragon", "Fox",
-                "Tiger", "Raven", "Lynx", "Phoenix", "Shark", "Cobra"};
-
-        Set<String> usedNames = new HashSet<>();
-
-        for (int i = 0; i < npcCount; i++) {
-            String posKey;
-            int x, y;
-            do {
-                x = rng.nextInt(gridSize);
-                y = rng.nextInt(gridSize);
-                posKey = x + "," + y;
-            } while (usedPositions.contains(posKey));
-            usedPositions.add(posKey);
-
-            String name;
-            do {
-                name = adjectives[rng.nextInt(adjectives.length)] + " "
-                        + nouns[rng.nextInt(nouns.length)];
-            } while (usedNames.contains(name));
-            usedNames.add(name);
-
-            NPC npc = new NPC();
-            npc.setGame(game);
-            npc.setName(name);
-            npc.setMaxHp(50 + rng.nextInt(101));
-            npc.setDmg(5 + rng.nextInt(26));
-            npc.setSpeed(1 + rng.nextInt(10));
-            npc.setFinalHp(npc.getMaxHp());
-            npc.setFinalX(x);
-            npc.setFinalY(y);
-            npc.setAlive(true);
-            npcs.add(npcRepository.save(npc));
+        if (gameEngine.isRunning()) {
+            Optional<Game> live = gameRepository.findTopByStatusOrderByIdDesc(GameStatus.IN_PROGRESS);
+            if (live.isPresent() && live.get().getId().equals(gameId)) {
+                npcs = gameEngine.getCurrentNpcStates();
+            } else {
+                npcs = npcRepository.findByGameId(gameId).stream()
+                        .map(NpcDto::fromEntity)
+                        .collect(Collectors.toList());
+            }
+        } else {
+            npcs = npcRepository.findByGameId(gameId).stream()
+                    .map(NpcDto::fromEntity)
+                    .collect(Collectors.toList());
         }
 
         return npcs;
     }
+
+private List<NPC> spawnNpcs(Game game) {
+    Random rng = new Random();
+    Set<String> usedPositions = new HashSet<>();
+    List<NPC> npcs = new ArrayList<>();
+
+    String[] namesArray = {"minecraft makka", "Kovács Dániel OwO", "Kocsán László",
+    "Barabás Márton von Marci", "Téapó","Mike Wazowski", "Dragon sex", "Lakatos Radiátor", 
+    "Éhes ember", "Zöld hulk", "Elfogyott a sör", "Kuta", "Micsoda férfi", "Cineman", "Kis menő",
+    "Ace man", "Gyurbán Viktor Ferenc", "Pítőr Mazsar", "God amongst Men", "Skibidi Ricsi", "Mesterséges Int. ZH"};
+    
+    // Indexek generálása és keverése
+    List<Integer> indices = new ArrayList<>();
+    for (int i = 0; i < namesArray.length; i++) {
+        indices.add(i);
+    }
+    Collections.shuffle(indices);
+
+    for (int i = 0; i < npcCount; i++) {
+        String posKey;
+        int x, y;
+        do {
+            x = rng.nextInt(gridSize);
+            y = rng.nextInt(gridSize);
+            posKey = x + "," + y;
+        } while (usedPositions.contains(posKey));
+        usedPositions.add(posKey);
+
+        NPC npc = new NPC();
+        npc.setGame(game);
+        
+        // Név és kép párosítása a megkevert index alapján
+        int randomIndex = indices.get(i);
+        npc.setName(namesArray[randomIndex]); 
+        npc.setPicId(randomIndex + 1); // +1, mert a kép ID-k 1-től indulnak
+        
+        npc.setMaxHp(50 + rng.nextInt(101));
+        npc.setDmg(5 + rng.nextInt(26));
+        npc.setSpeed(1 + rng.nextInt(10));
+        npc.setRegen(rng.nextInt(6)); // 0-5 közötti érték
+        npc.setFinalHp(npc.getMaxHp());
+        npc.setFinalX(x);
+        npc.setFinalY(y);
+        npc.setAlive(true);
+        
+        npcs.add(npcRepository.save(npc));
+    }
+
+    return npcs;
+}
 
 
     private GameResponse buildGameResponse(Game game, boolean liveNpcs) {

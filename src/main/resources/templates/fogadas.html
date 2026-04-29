@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Fogadó felület</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="icon" type="image/png" href="/pic/icon.png">
+</head>
+<body class="fog_page">
+    <div class="felsoSzoveg">
+        Válasz ki egy karaktert!
+    </div>
+
+    <div class="teglalap" id="doboz">
+        <div id="kepekContainer"></div>
+        <div class="rejtettCim" id="cim">
+            <div class="innerCim"></div>
+        </div>
+        <div class="rejtettResz" id="alsoResz">
+    
+            <div class="balDoboz" id="balDoboz">
+                
+            </div>
+
+            <div class="jobbDoboz">
+                <div class="pinBoxWrapper">
+                    <input id="penzOsszeg" type="number" min="0" placeholder="0" />
+                    <span class="ftLabel">FT</span>
+                </div>
+
+            <button class="fogadasGomb">Fogadás</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="jobbFelso">
+        <div class="penzKep">
+            <img src="/pic/money.jpg" alt="money">
+        </div>
+        <div class="penzSzoveg">
+        0 Ft
+        </div>
+    </div>
+
+    <button id="logoutBtn" class="logoutBtn">Kijelentkezés</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="/js/fog.js"></script>
+
+</body>
+</html>
